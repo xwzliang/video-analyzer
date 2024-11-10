@@ -26,14 +26,15 @@ class AudioProcessor:
             cache_dir = Path.home() / ".cache" / "huggingface" / "hub"
             logger.info(f"Using HuggingFace cache directory: {cache_dir}")
             
-            # Set device
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+            # Force CPU usage for now faster whisper having issues with cudas
+            self.device = "cpu"
+            compute_type = "float32"
             logger.info(f"Using device: {self.device}")
-            
+
             self.model = WhisperModel(
                 model_size,
                 device=self.device,
-                compute_type="float32"
+                compute_type=compute_type
             )
             logger.info(f"Successfully loaded Whisper model: {model_size}")
             
