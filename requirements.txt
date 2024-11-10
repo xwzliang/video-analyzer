@@ -1,0 +1,11 @@
+numpy==1.24.3
+opencv-python==4.8.0.76
+openai-whisper==20231117
+pydub==0.25.1
+Pillow==10.0.0
+requests==2.31.0
+typing-extensions==4.7.1
+dataclasses-json==0.5.7
+python-dotenv==1.0.0
+torch==2.1.0
+torchaudio==2.1.0
