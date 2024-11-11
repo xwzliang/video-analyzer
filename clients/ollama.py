@@ -18,8 +18,8 @@ class OllamaClient:
         image_path: Optional[str] = None,
         stream: bool = False,
         model: str = "llama3.2-vision",
-        temperature: float = 0.1,
-        num_predict: int = 246) -> Dict[Any, Any]:
+        temperature: float = 0.2,
+        num_predict: int = 256) -> Dict[Any, Any]: # 256 is arbitrary
         try:
             # Build the request data
             data = {

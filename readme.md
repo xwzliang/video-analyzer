@@ -14,6 +14,14 @@ It's designed to run 100% locally.
 - 📊 Detailed JSON output of analysis results
 - ⚙️ Highly configurable through command line arguments or config file
 
+## Design
+- Get key frames
+- Get Audio
+- Describe each frame independently with prompt template
+- Compile all the responses and the transcription to describe the video
+- Narrate the response for more natural consumption
+![Description of the image](docs/design.png)
+
 ## Requirements
 
 ### System Requirements

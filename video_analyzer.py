@@ -175,7 +175,7 @@ class VideoAnalyzer:
                 num_predict=300
             )
             logger.info(f"Successfully analyzed frame {frame.number}")
-            return response
+            return {k: v for k, v in response.items() if k != "context"}
         except Exception as e:
             logger.error(f"Error analyzing frame {frame.number}: {e}")
             return {"response": f"Error analyzing frame {frame.number}: {str(e)}"}
@@ -217,7 +217,7 @@ class VideoAnalyzer:
                 num_predict=1000
             )
             logger.info("Successfully reconstructed video description")
-            return response
+            return {k: v for k, v in response.items() if k != "context"}
         except Exception as e:
             logger.error(f"Error reconstructing video: {e}")
             return {"response": f"Error reconstructing video: {str(e)}"}
@@ -244,7 +244,7 @@ class VideoAnalyzer:
                 num_predict=500
             )
             logger.info("Successfully enhanced video narrative")
-            return response
+            return {k: v for k, v in response.items() if k != "context"}
         except Exception as e:
             logger.error(f"Error enhancing narrative: {e}")
             return {"response": f"Error enhancing narrative: {str(e)}"}
