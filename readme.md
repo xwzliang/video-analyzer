@@ -69,7 +69,7 @@ pip install -r requirements.txt
 
 2. Pull the default vision model:
 ```bash
-ollama pull llama2-vision
+ollama pull llama3.2-vision
 ```
 
 3. Start the Ollama service:
