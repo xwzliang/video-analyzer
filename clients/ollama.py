@@ -1,17 +1,12 @@
-# clients/ollama.py
 import requests
-import base64
 import json
 from typing import Optional, Dict, Any
+from .llm_client import LLMClient
 
-class OllamaClient:
+class OllamaClient(LLMClient):
     def __init__(self, base_url: str = "http://localhost:11434"):
         self.base_url = base_url.rstrip('/')
         self.generate_url = f"{self.base_url}/api/generate"
-
-    def encode_image(self, image_path: str) -> str:
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
 
     def generate(self,
         prompt: str,
@@ -19,7 +14,7 @@ class OllamaClient:
         stream: bool = False,
         model: str = "llama3.2-vision",
         temperature: float = 0.2,
-        num_predict: int = 256) -> Dict[Any, Any]: # 256 is arbitrary
+        num_predict: int = 256) -> Dict[Any, Any]:
         try:
             # Build the request data
             data = {
@@ -33,11 +28,8 @@ class OllamaClient:
             }
             
             if image_path:
-                try:
-                    base64_image = self.encode_image(image_path)
-                    data["images"] = [base64_image]
-                except FileNotFoundError:
-                    raise Exception(f"Image file not found: {image_path}")
+                # Use encode_image from parent LLMClient class
+                data["images"] = [self.encode_image(image_path)]
                     
             response = requests.post(self.generate_url, json=data)
             response.raise_for_status()

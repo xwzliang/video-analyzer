@@ -2,7 +2,7 @@
 
 A video analysis tool that combines Llama's 11B vision model Whisper to create a description by taking key frames, feeding them to the vision model to get details. It uses the details from each frame and the transcript, if avaialable to describe what's happening in the video. 
 
-It's designed to run 100% locally.
+It's designed to run 100% locally, but allow support openrouter.
 
 ## Features
 - 💻 Runs completely locally - no cloud services or API keys needed
@@ -77,6 +77,25 @@ ollama pull llama3.2-vision
 ollama serve
 ```
 
+### OpenRouter Setup (Optional)
+
+If you want to use OpenRouter instead of Ollama:
+
+1. Get an API key from [OpenRouter](https://openrouter.ai)
+2. Either:
+   - Pass it via command line: `--openrouter-key your-api-key`
+   - Or add it to config/config.json:
+     ```json
+     {
+       "clients": {
+         "default": "openrouter",
+         "openrouter": {
+           "api_key": "your-api-key"
+         }
+       }
+     }
+     ```
+
 ## Project Structure
 
 ```
@@ -96,8 +115,14 @@ video-analyzer/
 
 ### Basic Usage
 
+Using Ollama (default):
 ```bash
 python video_analyzer.py path/to/video.mp4
+```
+
+Using OpenRouter:
+```bash
+python video_analyzer.py path/to/video.mp4 --openrouter-key your-api-key
 ```
 
 #### Sample Output
@@ -132,8 +157,9 @@ Note: The audio transcript indicates that "Happy Birthday to You!" is being sung
 python video_analyzer.py path/to/video.mp4 \
     --config custom_config.json \
     --output ./custom_output \
-    --ollama-url http://localhost:11434 \
-    --model llama2-vision \
+    --client openrouter \
+    --openrouter-key your-api-key \
+    --model llama3.2-vision \
     --frames-per-minute 15 \
     --duration 60 \
     --whisper-model medium \
@@ -145,10 +171,12 @@ python video_analyzer.py path/to/video.mp4 \
 | Argument | Description | Default |
 |----------|-------------|---------|
 | `video_path` | Path to the input video file | (Required) |
-| `--config` | Path to configuration file | config/default_config.json |
+| `--config` | Path to configuration directory | config/ |
 | `--output` | Output directory for analysis results | output/ |
+| `--client` | Client to use (ollama or openrouter) | ollama |
 | `--ollama-url` | URL for the Ollama service | http://localhost:11434 |
-| `--model` | Name of the vision model to use | llama2-vision |
+| `--openrouter-key` | API key for OpenRouter service | None |
+| `--model` | Name of the vision model to use | llama3.2-vision |
 | `--frames-per-minute` | Target number of frames to extract | 10 |
 | `--duration` | Duration in seconds to process | None (full video) |
 | `--whisper-model` | Whisper model size | medium |
@@ -156,50 +184,31 @@ python video_analyzer.py path/to/video.mp4 \
 
 ## Configuration
 
-The tool can be configured using a JSON configuration file. Default location: `config/default_config.json`
+The tool uses a cascading configuration system:
+1. Command line arguments (highest priority)
+2. User config (config/config.json)
+3. Default config [config/default_config.json](config/default_config.json)
 
-```json
-{
-    "ollama_url": "http://localhost:11434",
-    "model": "llama2-vision",
-    "prompt_dir": "prompts",
-    "output_dir": "output",
-    "frames_per_minute": 10,
-    "whisper_model": "medium",
-    "keep_frames": false,
-    "frame_analysis_threshold": 10.0,
-    "min_frame_difference": 5.0,
-    "max_frames": 30,
-    "response_length": {
-        "frame": 300,
-        "reconstruction": 1000,
-        "narrative": 500
-    },
-    "audio": {
-        "sample_rate": 16000,
-        "channels": 1,
-        "quality_threshold": 0.2,
-        "chunk_length": 30,
-        "language_confidence_threshold": 0.8
-    }
-}
-```
+
 
 ### Configuration Options
 
 #### General Settings
-- `ollama_url`: URL for the Ollama service
-- `model`: Vision model to use for frame analysis
+- `clients.default`: Default client to use (ollama or openrouter)
+- `clients.ollama.url`: URL for the Ollama service
+- `clients.ollama.model`: Vision model to use with Ollama
+- `clients.openrouter.api_key`: API key for OpenRouter service
+- `clients.openrouter.model`: Vision model to use with OpenRouter
 - `prompt_dir`: Directory containing prompt files
 - `output_dir`: Directory for output files
-- `frames_per_minute`: Target number of frames to extract per minute
+- `frames.per_minute`: Target number of frames to extract per minute
 - `whisper_model`: Whisper model size (tiny, base, small, medium, large)
 - `keep_frames`: Whether to keep extracted frames after analysis
 
 #### Frame Analysis Settings
-- `frame_analysis_threshold`: Threshold for key frame detection
-- `min_frame_difference`: Minimum difference between frames
-- `max_frames`: Maximum number of frames to extract
+- `frames.analysis_threshold`: Threshold for key frame detection
+- `frames.min_difference`: Minimum difference between frames
+- `frames.max_count`: Maximum number of frames to extract
 
 #### Response Length Settings
 - `response_length.frame`: Maximum length for frame analysis
@@ -227,7 +236,8 @@ The tool generates a JSON file (`analysis.json`) containing:
 ```json
 {
     "metadata": {
-        "model_used": "llama2-vision",
+        "client": "ollama",
+        "model": "llama3.2-vision",
         "whisper_model": "medium",
         "frames_per_minute": 10,
         "frames_extracted": 15,
@@ -256,14 +266,19 @@ The tool generates a JSON file (`analysis.json`) containing:
    - Verify Ollama is running: `ollama serve`
    - Check the URL in configuration matches your Ollama setup
 
-3. **Out of memory**
+3. **OpenRouter issues**
+   - Verify your API key is correct
+   - Check your OpenRouter account has sufficient credits
+
+4. **Out of memory**
    - Try reducing `frames_per_minute`
    - Use a smaller Whisper model
    - Process shorter video duration using `--duration`
 
-4. **Poor transcription quality**
+5. **Poor transcription quality**
    - Try using a larger Whisper model
    - Ensure good audio quality in the input video
+   - Tweek the prompts in `/prompts`
    - Check for background noise in the video
 
 ## License

@@ -1,13 +1,6 @@
-# Core ML/Processing
-torch>=2.0.0
-numpy>=1.24.0
-
-# Audio Processing
-faster-whisper>=0.10.0
-pydub>=0.25.1
-
-# Video Processing
 opencv-python>=4.8.0
-
-# API Communication
+numpy>=1.24.0
+torch>=2.0.0
+openai-whisper>=20231117
 requests>=2.31.0
+Pillow>=10.0.0
