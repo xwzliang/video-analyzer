@@ -187,47 +187,9 @@ python video_analyzer.py path/to/video.mp4 \
 The tool uses a cascading configuration system:
 1. Command line arguments (highest priority)
 2. User config (config/config.json)
-3. Default config (config/default_config.json)
+3. Default config [config/default_config.json](config/default_config.json)
 
-Example configuration:
 
-```json
-{
-    "clients": {
-        "default": "ollama",
-        "ollama": {
-            "url": "http://localhost:11434",
-            "model": "llama3.2-vision"
-        },
-        "openrouter": {
-            "api_key": "",
-            "model": "llama3.2-vision"
-        }
-    },
-    "prompt_dir": "prompts",
-    "output_dir": "output",
-    "frames": {
-        "per_minute": 60,
-        "analysis_threshold": 10.0,
-        "min_difference": 5.0,
-        "max_count": 30
-    },
-    "response_length": {
-        "frame": 300,
-        "reconstruction": 1000,
-        "narrative": 500
-    },
-    "audio": {
-        "whisper_model": "medium",
-        "sample_rate": 16000,
-        "channels": 1,
-        "quality_threshold": 0.2,
-        "chunk_length": 30,
-        "language_confidence_threshold": 0.8
-    },
-    "keep_frames": false
-}
-```
 
 ### Configuration Options
 
@@ -316,6 +278,7 @@ The tool generates a JSON file (`analysis.json`) containing:
 5. **Poor transcription quality**
    - Try using a larger Whisper model
    - Ensure good audio quality in the input video
+   - Tweek the prompts in `/prompts`
    - Check for background noise in the video
 
 ## License
