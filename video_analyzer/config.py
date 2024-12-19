@@ -3,14 +3,29 @@ from pathlib import Path
 import json
 from typing import Any
 import logging
+import pkg_resources
 
 logger = logging.getLogger(__name__)
 
 class Config:
     def __init__(self, config_dir: str = "config"):
+        # Handle user-provided config directory
         self.config_dir = Path(config_dir)
         self.user_config = self.config_dir / "config.json"
+        
+        # First try to find default_config.json in the user-provided directory
         self.default_config = self.config_dir / "default_config.json"
+        
+        # If not found, fallback to package's default config
+        if not self.default_config.exists():
+            try:
+                default_config_path = pkg_resources.resource_filename('video_analyzer', 'config/default_config.json')
+                self.default_config = Path(default_config_path)
+                logger.debug(f"Using packaged default config from {self.default_config}")
+            except Exception as e:
+                logger.error(f"Error finding default config: {e}")
+                raise
+            
         self.load_config()
 
     def load_config(self):
@@ -20,11 +35,11 @@ class Config:
         """
         try:
             if self.user_config.exists():
-                logger.info(f"Loading user config from {self.user_config}")
+                logger.debug(f"Loading user config from {self.user_config}")
                 with open(self.user_config) as f:
                     self.config = json.load(f)
             else:
-                logger.info(f"No user config found, loading default config from {self.default_config}")
+                logger.debug(f"No user config found, loading default config from {self.default_config}")
                 with open(self.default_config) as f:
                     self.config = json.load(f)
                     
@@ -66,7 +81,7 @@ class Config:
             self.config_dir.mkdir(parents=True, exist_ok=True)
             with open(self.user_config, 'w') as f:
                 json.dump(self.config, f, indent=2)
-            logger.info(f"Saved user config to {self.user_config}")
+            logger.debug(f"Saved user config to {self.user_config}")
         except Exception as e:
             logger.error(f"Error saving user config: {e}")
             raise

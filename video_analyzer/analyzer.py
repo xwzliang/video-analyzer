@@ -1,9 +1,9 @@
 from typing import List, Dict, Any, Optional
 import logging
-from clients.llm_client import LLMClient
-from prompt import PromptLoader
-from frame import Frame
-from audio_processor import AudioTranscript
+from .clients.llm_client import LLMClient
+from .prompt import PromptLoader
+from .frame import Frame
+from .audio_processor import AudioTranscript
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class VideoAnalyzer:
                 model=self.model,
                 num_predict=300
             )
-            logger.info(f"Successfully analyzed frame {frame.number}")
+            logger.debug(f"Successfully analyzed frame {frame.number}")
             
             # Store the analysis for future frames
             analysis_result = {k: v for k, v in response.items() if k != "context"}
