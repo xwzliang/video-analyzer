@@ -54,7 +54,7 @@ cd video-analyzer
 
 2. Create and activate a virtual environment:
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
@@ -97,7 +97,7 @@ ollama serve
 
 If you want to use OpenRouter instead of Ollama:
 
-*Currently you can use llama 3.2 11b vision for free, and the default config uses this version automatically!*
+*Currently you can use llama 3.2 11b vision for free by adding :free to the model in default_config
 
 1. Get an API key from [OpenRouter](https://openrouter.ai)
 2. Either:
