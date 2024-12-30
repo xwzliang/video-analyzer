@@ -104,10 +104,10 @@ If you want to use OpenAI-compatible APIs (like OpenRouter or OpenAI) instead of
 2. Configure via command line:
    ```bash
    # For OpenRouter
-   video-analyzer video.mp4 --client openai_api --api-key your-key --api-url https://openrouter.ai/api/v1
+   video-analyzer video.mp4 --client openai_api --api-key your-key --api-url https://openrouter.ai/api/v1 --model gpt-4o-mini
 
    # For OpenAI
-   video-analyzer video.mp4 --client openai_api --api-key your-key --api-url https://api.openai.com/v1
+   video-analyzer video.mp4 --client openai_api --api-key your-key --api-url https://api.openai.com/v1 --model meta-llama/llama-3.2-11b-vision-instruct
    ```
 
    Or add to config/config.json:
