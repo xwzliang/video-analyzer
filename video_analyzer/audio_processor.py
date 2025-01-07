@@ -17,8 +17,11 @@ class AudioTranscript:
     language: str
 
 class AudioProcessor:
-    def __init__(self, model_size: str = "medium"):
-        """Initialize audio processor with specified Whisper model size."""
+    def __init__(self, 
+                 language: str | None = None,
+                 model_size_or_path: str = "medium",
+                 device: str = "cpu"):
+        """Initialize audio processor with specified Whisper model size or model path. By default, the medium model is used."""
         try:
             from faster_whisper import WhisperModel
             
@@ -27,16 +30,19 @@ class AudioProcessor:
             logger.debug(f"Using HuggingFace cache directory: {cache_dir}")
             
             # Force CPU usage for now faster whisper having issues with cudas
-            self.device = "cpu"
+            self.device = device
             compute_type = "float32"
             logger.debug(f"Using device: {self.device}")
 
+            self.language = language if language else None
+
             self.model = WhisperModel(
-                model_size,
-                device=self.device,
+                model_size_or_path,
+                device=device,
                 compute_type=compute_type
             )
-            logger.debug(f"Successfully loaded Whisper model: {model_size}")
+            logger.info(f"Initiation Input: Model size or path: {model_size_or_path}, Device: {device}, Compute type: {compute_type}, Language: {self.language if self.language else 'auto detected'}")
+            logger.debug(f"Successfully loaded Whisper model: {model_size_or_path}")
             
             # Check for ffmpeg installation
             try:
@@ -99,6 +105,11 @@ class AudioProcessor:
 
     def transcribe(self, audio_path: Path) -> Optional[AudioTranscript]:
         """Transcribe audio file using Whisper with quality checks."""
+        accepted_languages = {
+                "af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fo", "fr", "gl", "gu", "ha", "haw", "he", "hi", "hr", "ht", "hu", "hy", "id", "is", "it", "ja", "jw", "ka", "kk", "km", "kn", "ko", "la", "lb", "ln", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro", "ru", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "zh", "yue"
+        }
+        if self.language and self.language not in accepted_languages:
+            logger.warning(f"Invalid language code: {self.language}, will detect language automatically")
         try:
             # Initial transcription with VAD filtering
             segments, info = self.model.transcribe(
@@ -106,7 +117,8 @@ class AudioProcessor:
                 beam_size=5,
                 word_timestamps=True,
                 vad_filter=True,
-                vad_parameters=dict(min_silence_duration_ms=500)
+                vad_parameters=dict(min_silence_duration_ms=500),
+                language = self.language if self.language in accepted_languages else None
             )
             
             segments_list = list(segments)
