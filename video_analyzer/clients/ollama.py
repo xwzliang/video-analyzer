@@ -22,6 +22,7 @@ class OllamaClient(LLMClient):
                 "prompt": prompt,
                 "stream": stream,
                 "options": {
+                    "num_ctx": 4096,
                     "temperature": temperature,
                     "num_predict": num_predict
                 }
