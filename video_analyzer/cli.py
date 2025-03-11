@@ -151,6 +151,7 @@ def main():
             analyzer = VideoAnalyzer(client, model, prompt_loader, config.get("prompt", ""))
             frame_analyses = []
             for frame in frames:
+                logger.info(f"Analyzing frames {frame}...")
                 analysis = analyzer.analyze_frame(frame)
                 frame_analyses.append(analysis)
                 
