@@ -58,6 +58,7 @@ class VideoAnalyzer:
         prompt = self.frame_prompt.replace("{PREVIOUS_FRAMES}", self._format_previous_analyses())
         prompt = prompt.replace("{prompt}", self._format_user_prompt())
         prompt = f"{prompt}\nThis is frame {frame.number} captured at {frame.timestamp:.2f} seconds."
+        logger.info(f"Prompt for frame {frame.number}: {prompt}")
         
         try:
             response = self.client.generate(
@@ -67,6 +68,7 @@ class VideoAnalyzer:
                 num_predict=300
             )
             logger.debug(f"Successfully analyzed frame {frame.number}")
+            logger.info(f"Response for frame {frame.number}: {response}")
             
             # Store the analysis for future frames
             analysis_result = {k: v for k, v in response.items() if k != "context"}
